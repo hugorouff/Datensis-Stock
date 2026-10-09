@@ -1,0 +1,72 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Statistiques{% endblock %}
+
+{% macro chart_card(title, type, labels, values, colors = [], currency = false, label = '') %}
+    <div class="card-canva h-100">
+        <div class="card-canva-body">
+            <h3 class="h6 fw-bold mb-3">{{ title }}</h3>
+            <div style="height: 16rem;">
+                {% if values|filter(v => v > 0) is empty %}
+                    <div class="h-100 d-flex align-items-center justify-content-center text-muted small">Aucune donnée.</div>
+                {% else %}
+                    <canvas data-controller="chart"
+                            data-chart-type-value="{{ type }}"
+                            data-chart-labels-value="{{ labels|json_encode }}"
+                            data-chart-values-value="{{ values|json_encode }}"
+                            data-chart-colors-value="{{ colors|json_encode }}"
+                            data-chart-label-value="{{ label }}"
+                            data-chart-currency-value="{{ currency ? 'true' : 'false' }}"></canvas>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block content %}
+    <div class="mb-4">
+        {{ ui.page_header('Statistiques', 'Catalogue et facturation de ' ~ current_client_name() ~ '.') }}
+    </div>
+
+    <div class="row g-3 mb-4">
+        {% for kpi in [
+            { label: 'Articles actifs', value: stats.article_count },
+            { label: 'Articles suivis en stock', value: stats.tracked_count },
+            { label: 'CA HT ' ~ stats.year, value: ui.euro(stats.revenue_year) },
+            { label: 'Reste à encaisser (TTC)', value: ui.euro(stats.outstanding) },
+        ] %}
+            <div class="col-6 col-xl-3">
+                <div class="card-canva h-100">
+                    <div class="card-canva-body">
+                        <div class="small text-uppercase text-muted fw-semibold">{{ kpi.label }}</div>
+                        <div class="kpi-value">{{ kpi.value }}</div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if not stats.articles_available %}{{ ui.unavailable('articles') }}{% endif %}
+    {% if not stats.invoices_available %}{{ ui.unavailable('facturation') }}{% endif %}
+
+    {% set palette = ['#005f73', '#94d2bd', '#ee6c4d', '#0a7b8a', '#c1007a', '#4fa695', '#003a47', '#f4a261', '#6b7280'] %}
+    <div class="row g-3">
+        <div class="col-md-6">
+            {{ _self.chart_card('Chiffre d\'affaires HT (12 derniers mois)', 'bar',
+                stats.monthly_revenue.labels, stats.monthly_revenue.values, [], true, 'CA HT') }}
+        </div>
+        <div class="col-md-6">
+            {{ _self.chart_card('Factures par statut', 'doughnut',
+                stats.by_status.labels, stats.by_status.values, stats.by_status.colors) }}
+        </div>
+        <div class="col-md-6">
+            {{ _self.chart_card('Articles par catégorie', 'doughnut',
+                stats.by_category.labels, stats.by_category.values, palette|slice(0, stats.by_category.labels|length)) }}
+        </div>
+        <div class="col-md-6">
+            {{ _self.chart_card('Niveaux de stock', 'bar',
+                stats.stock_levels.labels, stats.stock_levels.values, ['#94d2bd', '#ee6c4d', '#dc2626', '#7f1d1d'], false, 'Articles') }}
+        </div>
+    </div>
+{% endblock %}

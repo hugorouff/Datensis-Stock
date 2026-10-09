@@ -1,0 +1,79 @@
+{% set navigation = [
+    { route: 'app_accueil', icon: 'fa-home', label: 'Accueil', active: ['app_accueil'] },
+    { route: 'app_catalogue', icon: 'fa-book-open', label: 'Catalogue', active: ['app_catalogue'] },
+    { route: 'app_articles', icon: 'fa-boxes-stacked', label: 'Gestion articles', active: ['app_articles', 'app_article_new', 'app_article_edit'] },
+    { route: 'app_facturation', icon: 'fa-file-invoice-dollar', label: 'Facturation', active: ['app_facturation', 'app_facture_show'] },
+    { route: 'app_charte', icon: 'fa-palette', label: 'Charte graphique', active: ['app_charte'] },
+    { route: 'app_statistiques', icon: 'fa-chart-pie', label: 'Statistiques', active: ['app_statistiques'] },
+] %}
+{% set current_route = app.request.attributes.get('_route') %}
+{% set branding = current_branding() %}
+{% set clients = app.user.clients %}
+
+<header class="bg-custom-primary shadow-lg sticky top-0 z-40 no-print" data-controller="toggle">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 gap-4">
+            <a href="{{ path('app_accueil') }}" class="flex items-center space-x-3 min-w-0">
+                <div class="w-10 h-10 shrink-0 rounded-lg bg-white flex items-center justify-center shadow-md overflow-hidden">
+                    {% if branding.logoUrl %}
+                        <img class="w-full h-full object-contain" src="{{ branding.logoUrl }}" alt="Logo {{ current_client_name() }}">
+                    {% else %}
+                        <i class="fas fa-cube text-custom-primary text-xl"></i>
+                    {% endif %}
+                </div>
+                <div class="min-w-0">
+                    <span class="font-bold text-lg tracking-tight block leading-none truncate">{{ current_client_name() }}</span>
+                    <span class="text-[11px] opacity-75 tracking-wider uppercase font-semibold">E-Client · Datensis</span>
+                </div>
+            </a>
+
+            <nav class="hidden xl:flex space-x-1">
+                {% for item in navigation %}
+                    <a href="{{ path(item.route) }}" class="nav-link {{ current_route in item.active ? 'nav-link-active' }} px-3 py-2 rounded-md text-sm font-medium transition flex items-center space-x-2">
+                        <i class="fas {{ item.icon }} text-xs"></i>
+                        <span>{{ item.label }}</span>
+                    </a>
+                {% endfor %}
+            </nav>
+
+            <div class="flex items-center space-x-2 shrink-0">
+                {% if clients|length > 1 %}
+                    <form method="post" action="{{ path('app_societe_switch') }}" class="hidden sm:block">
+                        <input type="hidden" name="_token" value="{{ csrf_token('switch-societe') }}">
+                        <select name="client" onchange="this.form.requestSubmit()" aria-label="Société" class="header-control text-xs rounded-lg px-2.5 py-1.5 max-w-[14rem] focus:outline-none">
+                            {% for id, name in clients %}
+                                <option value="{{ id }}" {{ id == current_client_id() ? 'selected' }}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                {% endif %}
+
+                <span class="hidden md:inline text-xs font-semibold opacity-90"><i class="fas fa-user-circle mr-1"></i>{{ app.user.displayName }}</span>
+                <a href="{{ path('app_logout') }}" title="Se déconnecter" class="header-control px-2.5 py-1.5 rounded-lg text-xs font-semibold">
+                    <i class="fas fa-right-from-bracket"></i>
+                </a>
+                <button type="button" data-action="toggle#toggle" class="xl:hidden nav-link p-2 rounded-md" aria-label="Menu">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div data-toggle-target="content" class="hidden xl:hidden border-t border-black/10 bg-custom-secondary px-2 pt-2 pb-3 space-y-1">
+        {% for item in navigation %}
+            <a href="{{ path(item.route) }}" class="block w-full px-3 py-2 rounded-md text-sm font-medium hover:bg-black/10 {{ current_route in item.active ? 'bg-black/10' }}">
+                <i class="fas {{ item.icon }} w-5"></i> {{ item.label }}
+            </a>
+        {% endfor %}
+        {% if clients|length > 1 %}
+            <form method="post" action="{{ path('app_societe_switch') }}" class="sm:hidden px-3 pt-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('switch-societe') }}">
+                <select name="client" onchange="this.form.requestSubmit()" aria-label="Société" class="w-full text-xs rounded-lg px-2.5 py-2 text-slate-900">
+                    {% for id, name in clients %}
+                        <option value="{{ id }}" {{ id == current_client_id() ? 'selected' }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        {% endif %}
+    </div>
+</header>

@@ -1,0 +1,35 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Aide{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        {{ ui.page_header('Aide', 'Mode d\'emploi du portail E-Client, branché sur les données Datensis de votre société.') }}
+    </div>
+
+    <div class="row g-3">
+        {% for item in [
+            { icon: 'bi-box-arrow-in-right', title: 'Connexion', text: 'Utilisez le nom d\'utilisateur et le mot de passe de votre compte Datensis. Un compte sans société rattachée ne peut pas entrer.' },
+            { icon: 'bi-building', title: 'Changer de société', text: 'Si votre compte est rattaché à plusieurs sociétés, le menu en haut à droite change la société affichée. Catalogue, factures et charte suivent cette société.' },
+            { icon: 'bi-journal-text', title: 'Catalogue', text: 'Liste les articles actifs, avec recherche, catégorie et niveau de stock. L\'export CSV reprend les filtres en cours.' },
+            { icon: 'bi-box-seam', title: 'Articles', text: 'Créer ou modifier un article l\'enregistre dans Datensis. Le stock actuel n\'est pas saisi ici : Datensis le calcule. Désactiver un article le retire du catalogue sans l\'effacer.' },
+            { icon: 'bi-receipt', title: 'Factures', text: 'Les factures sont celles émises dans Datensis pour la société en cours. Ouvrez une facture pour le détail, l\'impression ou le PDF lorsqu\'il est disponible.' },
+            { icon: 'bi-palette', title: 'Charte graphique', text: 'Couleurs, fond, barres, cartes et logo importé s\'appliquent à tous les utilisateurs de la société, et seulement à elle. Une autre société garde sa propre charte.' },
+            { icon: 'bi-circle-half', title: 'Thèmes', text: 'Le menu Thèmes, en bas du menu latéral, est votre préférence sur cet appareil : clair, sombre, automatique, ou original. Le thème original reprend la couleur de fond et la couleur des barres choisies dans la charte. La couleur des cartes s\'applique aux encarts du thème clair et du thème original ; le thème sombre garde des cartes foncées.' },
+            { icon: 'bi-database', title: 'Module absent', text: 'Si une page affiche ce bandeau, la base Datensis connectée ne contient pas encore les tables de ce module. Les autres pages restent utilisables.' },
+        ] %}
+            <div class="col-md-6">
+                <div class="card-canva h-100">
+                    <div class="card-canva-body d-flex gap-3">
+                        <i class="bi {{ item.icon }} fs-4" style="color: var(--ml2c-primary);"></i>
+                        <div>
+                            <h2 class="h6 fw-bold">{{ item.title }}</h2>
+                            <p class="small text-muted mb-0">{{ item.text }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

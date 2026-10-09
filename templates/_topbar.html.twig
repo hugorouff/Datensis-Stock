@@ -1,0 +1,37 @@
+{% set clients = app.user.clients %}
+
+<nav class="navbar navbar-ml2c sticky-top no-print">
+    <div class="container-fluid">
+        <button class="btn btn-link navbar-action d-lg-none" type="button" data-action="sidebar#toggle" aria-label="Menu">
+            <i class="bi bi-list fs-3"></i>
+        </button>
+
+        <a class="navbar-brand" href="{{ path('app_accueil') }}">
+            <img src="{{ asset('images/logo-ml2c.png') }}" alt="ML2C CONSEIL">
+        </a>
+
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            {% if clients|length > 1 %}
+                <form method="post" action="{{ path('app_societe_switch') }}" class="d-none d-md-block">
+                    <input type="hidden" name="_token" value="{{ csrf_token('switch-societe') }}">
+                    <select name="client" onchange="this.form.requestSubmit()" aria-label="Société" class="form-select form-select-sm" style="max-width: 16rem;">
+                        {% for id, name in clients %}
+                            <option value="{{ id }}" {{ id == current_client_id() ? 'selected' }}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            {% endif %}
+
+            <div class="dropdown">
+                <button class="btn btn-link navbar-action text-decoration-none dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle me-1"></i>{{ app.user.displayName }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><span class="dropdown-item-text small text-muted">{{ app.user.userIdentifier }}</span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

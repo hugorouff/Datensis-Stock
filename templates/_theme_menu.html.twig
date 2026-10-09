@@ -1,0 +1,11 @@
+<div class="dropdown">
+    <button class="nav-link dropdown-toggle w-100 text-start" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+        <i class="bi bi-palette me-2"></i>Thèmes
+    </button>
+    <ul class="dropdown-menu {{ compact|default(false) ? 'dropdown-menu-end' : '' }}">
+        <li><button type="button" class="dropdown-item" data-theme-target="choice" data-theme-mode="light" data-action="theme#choose"><i class="bi bi-sun me-2"></i>Thème clair</button></li>
+        <li><button type="button" class="dropdown-item" data-theme-target="choice" data-theme-mode="dark" data-action="theme#choose"><i class="bi bi-moon me-2"></i>Thème sombre</button></li>
+        <li><button type="button" class="dropdown-item" data-theme-target="choice" data-theme-mode="auto" data-action="theme#choose"><i class="bi bi-circle-half me-2"></i>Automatique</button></li>
+        <li><button type="button" class="dropdown-item" data-theme-target="choice" data-theme-mode="original" data-action="theme#choose"><i class="bi bi-brush me-2"></i>Thème original</button></li>
+    </ul>
+</div>

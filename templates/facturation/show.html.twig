@@ -1,0 +1,97 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Facture {{ invoice.numero }}{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 no-print">
+        <a href="{{ path('app_facturation') }}" class="small fw-semibold text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i>Toutes les factures</a>
+        <div class="d-flex gap-2">
+            <button type="button" onclick="window.print()" class="btn-canva btn-canva-ghost"><i class="bi bi-printer"></i> Imprimer</button>
+            {% if invoice.pdf_url %}
+                <a href="{{ invoice.pdf_url }}" target="_blank" rel="noopener" class="btn-canva btn-canva-primary"><i class="bi bi-download"></i> PDF Datensis</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <article class="card-canva mx-auto" style="max-width: 56rem;">
+        <div class="card-canva-body">
+            <div class="d-flex justify-content-between gap-4 border-bottom pb-4 mb-4">
+                <div class="d-flex gap-3">
+                    {% if branding.logoUrl %}
+                        <img src="{{ branding.logoUrl }}" alt="Logo" style="height: 64px; width: auto;">
+                    {% endif %}
+                    <div>
+                        <h2 class="h4 fw-bold text-gradient">{{ branding.companyName }}</h2>
+                        <p class="small text-muted mb-0" style="white-space: pre-line;">{{ branding.address }}</p>
+                        {% if branding.siret or branding.vatNumber %}
+                            <p class="small text-muted mt-1 mb-0">SIRET : {{ branding.siret ?: '—' }} · TVA : {{ branding.vatNumber ?: '—' }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold">FACTURE</div>
+                    <div class="font-monospace fw-bold" style="color: var(--ml2c-primary);">{{ invoice.numero }}</div>
+                    <div class="small text-muted">Émise le {{ invoice.date_emission ? invoice.date_emission|date('d/m/Y') : '—' }}</div>
+                    {% if invoice.date_echeance %}<div class="small text-muted">Échéance : {{ invoice.date_echeance|date('d/m/Y') }}</div>{% endif %}
+                    <div class="mt-2">{{ ui.status_badge(invoice.statut) }}</div>
+                </div>
+            </div>
+
+            <div class="row g-3 bg-light rounded-3 p-3 mb-4 small">
+                <div class="col-sm-6">
+                    <div class="text-uppercase text-muted fw-bold">Facturé à</div>
+                    <div class="fw-bold">{{ invoice.customer }}</div>
+                </div>
+                {% if invoice.objet %}
+                    <div class="col-sm-6">
+                        <div class="text-uppercase text-muted fw-bold">Objet</div>
+                        <div>{{ invoice.objet }}</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-ml2c">
+                    <thead>
+                        <tr>
+                            <th>Désignation</th>
+                            <th class="text-end">Quantité</th>
+                            <th class="text-end">PU HT</th>
+                            <th class="text-end">TVA</th>
+                            <th class="text-end">Total HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in invoice.lignes %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ line.libelle|striptags }}</div>
+                                    {% if line.description %}<div class="small text-muted">{{ line.description|striptags }}</div>{% endif %}
+                                </td>
+                                <td class="text-end text-nowrap">{{ line.quantite|number_format(2, ',', ' ') }} {{ line.unite }}</td>
+                                <td class="text-end font-monospace text-nowrap">{{ ui.euro(line.prix_unitaire_ht) }}</td>
+                                <td class="text-end">{{ line.taux_tva|number_format(1, ',') }} %</td>
+                                <td class="text-end fw-bold font-monospace text-nowrap">{{ ui.euro(line.montant_ht) }}</td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="5" class="text-center text-muted py-4">Aucune ligne sur cette facture.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end border-top pt-3">
+                <div style="width: 16rem;" class="small">
+                    <div class="d-flex justify-content-between"><span>Total HT</span><span class="fw-bold">{{ ui.euro(invoice.montant_ht) }}</span></div>
+                    <div class="d-flex justify-content-between text-muted"><span>TVA</span><span>{{ ui.euro(invoice.montant_tva) }}</span></div>
+                    <div class="d-flex justify-content-between fw-bold fs-6 border-top pt-2 mt-2"><span>Total TTC</span><span style="color: var(--ml2c-primary);">{{ ui.euro(invoice.montant_ttc) }}</span></div>
+                    {% if invoice.montant_paye > 0 %}
+                        <div class="d-flex justify-content-between text-success"><span>Déjà réglé</span><span>{{ ui.euro(invoice.montant_paye) }}</span></div>
+                        <div class="d-flex justify-content-between fw-bold"><span>Reste dû</span><span>{{ ui.euro(max(0, invoice.montant_ttc - invoice.montant_paye)) }}</span></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </article>
+{% endblock %}

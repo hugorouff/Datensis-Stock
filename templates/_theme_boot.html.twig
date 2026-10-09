@@ -1,0 +1,13 @@
+<script>
+    (function () {
+        var saved = null;
+        try {
+            saved = localStorage.getItem('ml2c-theme');
+        } catch (e) {}
+        var theme = saved || 'light';
+        var dark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('theme-dark', dark);
+        document.documentElement.classList.toggle('theme-original', theme === 'original');
+        document.documentElement.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+    })();
+</script>

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+    {% include '_theme_boot.html.twig' %}
+    <div class="login-tools" data-controller="theme">
+        {% include '_theme_menu.html.twig' with {compact: true} %}
+    </div>
+    <main class="login-page">
+        <div class="setup-card">
+            <div class="setup-card__band"></div>
+            <div class="setup-card__body">
+                <img class="setup-logo" src="{{ asset('images/logo-ml2c.png') }}" alt="ML2C CONSEIL">
+                <h1 class="setup-title">Connexion</h1>
+                <p class="setup-lead">Indiquez votre identifiant et votre mot de passe Datensis.</p>
+
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+
+                <form method="post" action="{{ path('app_login') }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="username">Nom d'utilisateur</label>
+                        <input type="text" id="username" name="_username" value="{{ last_username }}" required autofocus autocomplete="username" class="form-control">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" for="password">Mot de passe</label>
+                        <input type="password" id="password" name="_password" required autocomplete="current-password" class="form-control">
+                    </div>
+                    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+                    <button type="submit" class="btn-ml2c">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Se connecter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}

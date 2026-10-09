@@ -1,0 +1,76 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+    <div class="hero-ml2c mb-4">
+        <span class="badge rounded-pill text-bg-light text-dark">{{ current_client_name() }}</span>
+        <h1 class="h2 fw-bold mt-3 mb-2">Bonjour {{ app.user.displayName }}</h1>
+        <p class="mb-0 opacity-75">Retrouvez le catalogue de votre société et toutes les factures émises depuis Datensis.</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        {% for card in [
+            { icon: 'bi-box-seam', tone: 'var(--ml2c-gradient-primary)', label: 'Articles actifs', value: stats.article_count, hint: 'Disponibles au catalogue' },
+            { icon: 'bi-exclamation-triangle', tone: 'var(--ml2c-gradient-warm)', label: 'Alertes de stock', value: stats.stock_alerts, hint: 'Stock faible, critique ou en rupture' },
+            { icon: 'bi-receipt', tone: 'var(--ml2c-gradient-secondary)', label: 'Factures émises', value: stats.invoice_count, hint: 'Hors brouillons et annulées' },
+            { icon: 'bi-currency-euro', tone: 'var(--ml2c-gradient-primary)', label: 'CA HT ' ~ stats.year, value: ui.euro(stats.revenue_year), hint: 'Reste à encaisser : ' ~ ui.euro(stats.outstanding) },
+        ] %}
+            <div class="col-sm-6 col-xl-3">
+                <div class="card-canva h-100">
+                    <div class="card-canva-body d-flex gap-3 align-items-center">
+                        <div class="module-icon mb-0" style="background: {{ card.tone }};"><i class="bi {{ card.icon }}"></i></div>
+                        <div class="min-w-0">
+                            <div class="small text-uppercase text-muted fw-semibold">{{ card.label }}</div>
+                            <div class="kpi-value text-truncate">{{ card.value }}</div>
+                            <div class="small text-muted">{{ card.hint }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2 class="h5 fw-bold mb-3"><i class="bi bi-compass me-2" style="color: var(--ml2c-primary);"></i>Accès rapides</h2>
+    <div class="row g-3 mb-4">
+        {% for shortcut in [
+            { route: 'app_catalogue', icon: 'bi-journal-text', tone: 'var(--ml2c-gradient-primary)', title: 'Consulter le catalogue', text: 'Prix HT, TVA et disponibilité de vos articles.' },
+            { route: 'app_facturation', icon: 'bi-receipt', tone: 'var(--ml2c-gradient-secondary)', title: 'Mes factures', text: 'Historique des factures émises depuis Datensis.' },
+            { route: 'app_articles', icon: 'bi-pencil-square', tone: 'var(--ml2c-gradient-warm)', title: 'Gestion des articles', text: 'Créer, modifier ou désactiver vos articles.' },
+            { route: 'app_charte', icon: 'bi-palette', tone: 'var(--ml2c-gradient-primary)', title: 'Charte graphique', text: 'Couleurs et logo partagés par toute la société.' },
+        ] %}
+            <div class="col-sm-6 col-xl-3">
+                <a href="{{ path(shortcut.route) }}" class="module-card">
+                    <div class="module-icon" style="background: {{ shortcut.tone }};"><i class="bi {{ shortcut.icon }}"></i></div>
+                    <h3 class="h6 fw-bold">{{ shortcut.title }}</h3>
+                    <p class="small text-muted mb-0">{{ shortcut.text }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if stats.recent_invoices is not empty %}
+        <div class="card-canva">
+            <div class="card-canva-body d-flex justify-content-between align-items-center border-bottom">
+                <h3 class="h6 fw-bold mb-0">Dernières factures</h3>
+                <a href="{{ path('app_facturation') }}" class="small fw-semibold" style="color: var(--ml2c-primary);">Tout voir</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-ml2c mb-0">
+                    <tbody>
+                        {% for invoice in stats.recent_invoices %}
+                            <tr>
+                                <td class="ps-4 fw-semibold"><a href="{{ path('app_facture_show', {id: invoice.id}) }}" style="color: var(--ml2c-primary);">{{ invoice.numero }}</a></td>
+                                <td class="text-muted">{{ invoice.date_emission ? invoice.date_emission|date('d/m/Y') : '—' }}</td>
+                                <td class="fw-semibold">{{ invoice.customer }}</td>
+                                <td class="text-end fw-bold">{{ ui.euro(invoice.montant_ttc) }}</td>
+                                <td class="text-end pe-4">{{ ui.status_badge(invoice.statut) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

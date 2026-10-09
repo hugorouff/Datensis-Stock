@@ -1,0 +1,68 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Facturation{% endblock %}
+
+{% block content %}
+    <div class="hero-ml2c mb-4">
+        <span class="badge rounded-pill text-bg-light text-dark">Datensis</span>
+        <h1 class="h3 fw-bold mt-2 mb-1">Factures émises</h1>
+        <p class="mb-0 small opacity-75">Les factures de {{ current_client_name() }} sont lues directement dans Datensis.</p>
+    </div>
+
+    {% if not available %}
+        {{ ui.unavailable('facturation') }}
+    {% else %}
+        <div class="filter-bar d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <form method="get" action="{{ path('app_facturation') }}" class="flex-grow-1" style="max-width: 22rem;">
+                <input type="hidden" name="statut" value="{{ filters.statut }}">
+                <input type="search" name="q" value="{{ filters.q }}" placeholder="N° de facture, client ou objet…" class="form-control form-control-sm">
+            </form>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ path('app_facturation', {q: filters.q}) }}" class="btn btn-sm {{ filters.statut == '' ? 'btn-dark' : 'btn-outline-secondary' }}">Toutes</a>
+                {% for status in statuses %}
+                    <a href="{{ path('app_facturation', {q: filters.q, statut: status.value}) }}" class="btn btn-sm {{ filters.statut == status.value ? 'btn-dark' : 'btn-outline-secondary' }}">{{ status.label }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card-canva">
+            <div class="table-responsive">
+                <table class="table table-hover table-ml2c mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Numéro</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Objet</th>
+                            <th class="text-end">Total HT</th>
+                            <th class="text-end">TVA</th>
+                            <th class="text-end">Total TTC</th>
+                            <th>Statut</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in invoices %}
+                            <tr>
+                                <td class="ps-4 fw-semibold font-monospace text-nowrap" style="color: var(--ml2c-primary);">{{ invoice.numero }}</td>
+                                <td class="text-muted text-nowrap">{{ invoice.date_emission ? invoice.date_emission|date('d/m/Y') : '—' }}</td>
+                                <td class="fw-semibold">{{ invoice.customer }}</td>
+                                <td class="text-muted">{{ invoice.objet ?: '—' }}</td>
+                                <td class="text-end fw-bold text-nowrap">{{ ui.euro(invoice.montant_ht) }}</td>
+                                <td class="text-end text-muted text-nowrap">{{ ui.euro(invoice.montant_tva) }}</td>
+                                <td class="text-end fw-bold text-nowrap">{{ ui.euro(invoice.montant_ttc) }}</td>
+                                <td>{{ ui.status_badge(invoice.statut) }}</td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ path('app_facture_show', {id: invoice.id}) }}" class="btn btn-sm btn-dark"><i class="bi bi-eye me-1"></i>Voir</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="9" class="text-center text-muted py-5">Aucune facture trouvée.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

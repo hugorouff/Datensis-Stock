@@ -1,0 +1,121 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Charte graphique{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        {{ ui.page_header('Charte graphique de ' ~ current_client_name(), 'Un utilisateur de la société modifie la charte pour tous ses collègues. Les autres sociétés gardent la leur.') }}
+    </div>
+
+    {% if not available %}
+        {{ ui.unavailable('personnalisation des documents') }}
+    {% endif %}
+
+    <div class="row g-4" data-controller="theme-preview" data-theme-preview-uploaded-logo-value="{{ branding.logoUrl != branding.externalLogoUrl ? branding.logoUrl }}">
+        <div class="col-lg-4">
+            <div class="card-canva">
+                <div class="card-canva-body">
+                    <div class="alert {{ branding.persisted ? 'alert-success' : 'alert-light border' }} small">
+                        {% if branding.persisted %}
+                            <i class="bi bi-check-circle me-1"></i> Charte enregistrée pour {{ current_client_name() }} uniquement.
+                        {% else %}
+                            <i class="bi bi-info-circle me-1"></i> Aucune charte définie : les couleurs par défaut de Datensis s'appliquent.
+                        {% endif %}
+                    </div>
+
+                    {{ form_start(form) }}
+                        {{ form_errors(form) }}
+                        <p class="small fw-semibold mb-2">Palettes</p>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            {% for palette in palettes %}
+                                <button type="button" class="palette-choice"
+                                        data-action="theme-preview#apply"
+                                        data-theme-preview-primary-param="{{ palette.primary }}"
+                                        data-theme-preview-secondary-param="{{ palette.secondary }}"
+                                        data-theme-preview-accent-param="{{ palette.accent }}"
+                                        data-theme-preview-background-param="{{ palette.background }}"
+                                        data-theme-preview-navbar-param="{{ palette.navbar }}"
+                                        data-theme-preview-card-param="{{ palette.card }}">
+                                    <span class="palette-swatch" style="background: linear-gradient(135deg, {{ palette.primary }}, {{ palette.secondary }});"></span>
+                                    {{ palette.name }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                        {{ form_row(form.couleur_principale) }}
+                        {{ form_row(form.couleur_secondaire) }}
+                        {{ form_row(form.couleur_accent) }}
+                        {{ form_row(form.couleur_fond) }}
+                        {{ form_row(form.couleur_navbar) }}
+                        {{ form_row(form.couleur_carte) }}
+                        {% if branding.logoUrl %}
+                            <p class="small text-muted mb-2">Logo actuel</p>
+                            <img src="{{ branding.logoUrl }}" alt="Logo de {{ current_client_name() }}" class="mb-3" style="max-height: 48px; max-width: 100%;">
+                        {% endif %}
+                        {{ form_row(form.logo_fichier) }}
+                        {{ form_row(form.logo_url) }}
+                        {% if available %}
+                            <button type="submit" class="btn-canva btn-canva-primary w-100">Enregistrer pour la société</button>
+                        {% endif %}
+                    {{ form_end(form) }}
+
+                    {% if available and branding.persisted %}
+                        <form method="post" action="{{ path('app_charte_reset') }}" class="mt-2" data-turbo-confirm="Rétablir les couleurs par défaut et retirer le logo pour toute la société ?">
+                            <input type="hidden" name="_token" value="{{ csrf_token('charte-reset') }}">
+                            <button class="btn-canva btn-canva-ghost w-100">Rétablir les couleurs par défaut</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card-canva">
+                <div class="card-canva-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="h6 fw-bold mb-0">Aperçu des documents</h3>
+                        <span class="small text-muted">Mis à jour pendant la saisie</span>
+                    </div>
+                    <div data-theme-preview-target="preview" class="preview-shell border rounded-4 p-3">
+                        <div class="preview-nav d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-semibold">Barre de navigation</span>
+                            <span class="small">Menu</span>
+                        </div>
+                        <div class="preview-page">
+                        <div class="rounded-3 p-3 d-flex justify-content-between align-items-center mb-3" style="background: var(--ml2c-gradient-primary); color: var(--ml2c-on-primary);">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="bg-white rounded d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <img data-theme-preview-target="logoImage" class="d-none" alt="Logo" style="max-width: 28px; max-height: 28px;">
+                                    <i data-theme-preview-target="logoFallback" class="bi bi-building" style="color: var(--ml2c-primary);"></i>
+                                </span>
+                                <span class="fw-bold">{{ current_client_name() }}</span>
+                            </div>
+                            <span class="small opacity-75">En-tête de document</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="preview-surface border rounded-3 p-3">
+                                    <div class="small text-muted">Article</div>
+                                    <div class="fs-5 fw-bold">1 250,00 € HT</div>
+                                    <span class="badge mt-2" style="background: var(--ml2c-secondary); color: var(--ml2c-on-secondary);">Secondaire</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="rounded-3 p-3" style="background: var(--ml2c-tertiary); color: var(--ml2c-on-accent);">
+                                    <div class="small opacity-75">Accent</div>
+                                    <div class="fs-5 fw-bold">850,00 € HT</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <span class="btn-canva btn-canva-primary">Principale</span>
+                            <span class="btn-canva btn-canva-secondary">Secondaire</span>
+                            <span class="btn-canva btn-canva-warm">Accent</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

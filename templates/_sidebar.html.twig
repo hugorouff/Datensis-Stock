@@ -1,0 +1,56 @@
+{% set navigation = [
+    { route: 'app_accueil', icon: 'bi-grid-1x2', label: 'Accueil', active: ['app_accueil'] },
+    { route: 'app_catalogue', icon: 'bi-journal-text', label: 'Catalogue', active: ['app_catalogue'] },
+    { route: 'app_articles', icon: 'bi-box-seam', label: 'Articles', active: ['app_articles', 'app_article_new', 'app_article_edit'] },
+    { route: 'app_facturation', icon: 'bi-receipt', label: 'Facturation', active: ['app_facturation', 'app_facture_show'] },
+    { route: 'app_charte', icon: 'bi-palette', label: 'Charte graphique', active: ['app_charte'] },
+    { route: 'app_statistiques', icon: 'bi-pie-chart', label: 'Statistiques', active: ['app_statistiques'] },
+] %}
+{% set current_route = app.request.attributes.get('_route') %}
+{% set clients = app.user.clients %}
+
+<nav class="sidebar-ml2c no-print" id="sidebar" data-sidebar-target="panel">
+    <div class="position-sticky pt-3">
+        {% set branding = current_branding() %}
+        <div class="sidebar-company">
+            {% if branding.logoUrl %}
+                <img src="{{ branding.logoUrl }}" alt="" class="mb-2" style="max-height: 36px; max-width: 100%;">
+            {% endif %}
+            <small>Société</small>
+            <div class="fw-semibold text-truncate">{{ current_client_name() }}</div>
+        </div>
+
+        {% if clients|length > 1 %}
+            <form method="post" action="{{ path('app_societe_switch') }}" class="d-md-none px-2 mb-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('switch-societe') }}">
+                <select name="client" onchange="this.form.requestSubmit()" aria-label="Société" class="form-select form-select-sm">
+                    {% for id, name in clients %}
+                        <option value="{{ id }}" {{ id == current_client_id() ? 'selected' }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        {% endif %}
+
+        <ul class="nav flex-column pb-3">
+            {% for item in navigation %}
+                <li class="nav-item">
+                    <a class="nav-link {{ current_route in item.active ? 'active' }}" href="{{ path(item.route) }}">
+                        <i class="bi {{ item.icon }} me-2"></i>{{ item.label }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <hr class="mx-3">
+        <ul class="nav flex-column pb-3">
+            <li class="nav-item px-2">
+                {% include '_theme_menu.html.twig' with {static: true} %}
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ current_route == 'app_aide' ? 'active' }}" href="{{ path('app_aide') }}">
+                    <i class="bi bi-question-circle me-2"></i>Aide
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

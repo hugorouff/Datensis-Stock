@@ -1,13 +1,21 @@
 doctrine:
     dbal:
-        url: '%env(resolve:DATABASE_URL)%'
+        default_connection: default
+        connections:
+            default:
+                url: '%env(resolve:DATABASE_URL)%'
 
-        # IMPORTANT: You MUST configure your server version,
-        # either here or in the DATABASE_URL env var (see .env file)
-        #server_version: '16'
+                # IMPORTANT: You MUST configure your server version,
+                # either here or in the DATABASE_URL env var (see .env file)
+                #server_version: '16'
 
-        profiling_collect_backtrace: '%kernel.debug%'
-        use_savepoints: true
+                profiling_collect_backtrace: '%kernel.debug%'
+                use_savepoints: true
+
+            # Base de l'application Datensis (tables Django), interrogée en SQL via DBAL
+            datensis:
+                url: '%env(datensis_database_url:resolve:DATENSIS_DATABASE_URL)%'
+                profiling_collect_backtrace: '%kernel.debug%'
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -30,8 +38,10 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            connections:
+                default:
+                    # "TEST_TOKEN" is typically set by ParaTest
+                    dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
 when@prod:
     doctrine:

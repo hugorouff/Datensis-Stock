@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% set branding = current_branding() %}
+    {% include '_theme_boot.html.twig' %}
+    <div class="d-flex flex-column flex-grow-1" data-controller="sidebar theme" style="{{ branding.cssVariables }}">
+        {% include '_topbar.html.twig' %}
+
+        <div class="d-flex flex-grow-1">
+            <div class="sidebar-backdrop" data-sidebar-target="backdrop" data-action="click->sidebar#close"></div>
+            {% include '_sidebar.html.twig' %}
+
+            <main class="main-content flex-grow-1">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <div class="flash-ml2c">
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert {{ type == 'error' ? 'alert-danger' : 'alert-success' }} d-flex align-items-center gap-2" role="alert" data-controller="toast">
+                    <i class="bi {{ type == 'error' ? 'bi-exclamation-circle' : 'bi-check-circle' }}"></i>
+                    <span class="flex-grow-1">{{ message }}</span>
+                    <button type="button" class="btn-close" data-action="toast#dismiss" aria-label="Fermer"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}

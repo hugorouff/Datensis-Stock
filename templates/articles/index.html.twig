@@ -1,0 +1,82 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Gestion des articles{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        {{ ui.page_header('Gestion des articles', 'Les modifications sont enregistrées directement dans Datensis.') }}
+        {% if available %}
+            <a href="{{ path('app_article_new') }}" class="btn-canva btn-canva-primary"><i class="bi bi-plus-lg"></i> Nouvel article</a>
+        {% endif %}
+    </div>
+
+    {% if not available %}
+        {{ ui.unavailable('articles') }}
+    {% else %}
+        <form method="get" action="{{ path('app_articles') }}" class="filter-bar d-flex flex-wrap align-items-center gap-3 mb-4">
+            <input type="search" name="q" value="{{ q }}" placeholder="Rechercher un article…" class="form-control" style="max-width: 22rem;">
+            <div class="form-check mb-0">
+                <input class="form-check-input" type="checkbox" name="inactifs" value="1" id="inactifs" {{ show_inactive ? 'checked' }} onchange="this.form.requestSubmit()">
+                <label class="form-check-label small fw-semibold" for="inactifs">Afficher aussi les articles désactivés</label>
+            </div>
+        </form>
+
+        <div class="card-canva">
+            <div class="card-canva-body d-flex justify-content-between align-items-center border-bottom">
+                <h3 class="h6 fw-bold mb-0">Référentiel articles</h3>
+                <span class="badge rounded-pill text-bg-light border">{{ articles|length }} article{{ articles|length > 1 ? 's' }}</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-ml2c mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Code</th>
+                            <th>Libellé</th>
+                            <th>Type</th>
+                            <th class="text-end">Prix HT</th>
+                            <th class="text-end">Prix d'achat</th>
+                            <th class="text-end">Marge</th>
+                            <th class="text-end">TVA</th>
+                            <th>Stock</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in articles %}
+                            <tr class="{{ not article.actif ? 'opacity-50' }}">
+                                <td class="ps-4 font-monospace fw-semibold">{{ article.code }}</td>
+                                <td>
+                                    <div class="fw-semibold">{{ article.libelle|striptags }}</div>
+                                    <div class="small text-muted">{{ article.categorie ?? 'Sans catégorie' }}{{ not article.actif ? ' · désactivé' }}</div>
+                                </td>
+                                <td><span class="badge text-bg-light border">{{ article.type_label }}{{ article.unite_label ? ' / ' ~ article.unite_label }}</span></td>
+                                <td class="text-end fw-bold text-nowrap">{{ ui.euro(article.prix_ht) }}</td>
+                                <td class="text-end text-muted text-nowrap">{{ article.prix_achat is not null ? ui.euro(article.prix_achat) : '—' }}</td>
+                                <td class="text-end text-muted text-nowrap">
+                                    {% if article.prix_achat and article.prix_ht > 0 %}
+                                        {{ ((article.prix_ht - article.prix_achat) / article.prix_ht * 100)|number_format(1, ',') }} %
+                                    {% else %}—{% endif %}
+                                </td>
+                                <td class="text-end text-muted">{{ article.taux_tva is not null ? article.taux_tva|number_format(1, ',') ~ ' %' : '—' }}</td>
+                                <td>{% if article.suivi_stock %}{{ ui.stock_badge(article) }}{% else %}<span class="text-muted">Non suivi</span>{% endif %}</td>
+                                <td class="text-end pe-4 text-nowrap">
+                                    <a href="{{ path('app_article_edit', {id: article.id}) }}" class="btn btn-sm btn-outline-secondary" title="Modifier"><i class="bi bi-pencil"></i></a>
+                                    <form method="post" action="{{ path('app_article_toggle', {id: article.id}) }}" class="d-inline"
+                                          data-turbo-confirm="{{ article.actif ? 'Désactiver cet article ? Il ne sera plus proposé à la facturation dans Datensis.' : 'Réactiver cet article ?' }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('article-toggle-' ~ article.id) }}">
+                                        <button class="btn btn-sm {{ article.actif ? 'btn-outline-danger' : 'btn-outline-success' }}" title="{{ article.actif ? 'Désactiver' : 'Réactiver' }}">
+                                            <i class="bi {{ article.actif ? 'bi-slash-circle' : 'bi-arrow-counterclockwise' }}"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="9" class="text-center text-muted py-5">Aucun article.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

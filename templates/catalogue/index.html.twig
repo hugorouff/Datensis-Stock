@@ -1,0 +1,87 @@
+{% extends 'layout.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Catalogue{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        {{ ui.page_header('Catalogue des articles', 'Tarifs et disponibilité des articles de ' ~ current_client_name() ~ '.') }}
+        <a href="{{ path('app_catalogue_export', app.request.query.all) }}" data-turbo="false" class="btn-canva btn-canva-ghost">
+            <i class="bi bi-filetype-csv"></i> Exporter (CSV)
+        </a>
+    </div>
+
+    {% if not available %}
+        {{ ui.unavailable('catalogue') }}
+    {% else %}
+        <form method="get" action="{{ path('app_catalogue') }}" data-turbo="false" autocomplete="off" class="filter-bar row g-2 align-items-center mb-4">
+            <div class="col-lg-4">
+                <input type="search" name="q" value="{{ filters.q }}" placeholder="Rechercher par libellé, code ou description…" class="form-control" aria-label="Recherche">
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <select name="categorie" onchange="this.form.requestSubmit()" class="form-select" aria-label="Catégorie">
+                    <option value="">Toutes les catégories</option>
+                    {% for id, name in categories %}
+                        <option value="{{ id }}" {{ filters.categorie == id ? 'selected' }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <select name="stock" onchange="this.form.requestSubmit()" class="form-select" aria-label="État de stock">
+                    <option value="">Tous les stocks</option>
+                    <option value="NON_SUIVI" {{ filters.stock == 'NON_SUIVI' ? 'selected' }}>Sans suivi</option>
+                    {% for level in stock_levels %}
+                        <option value="{{ level.value }}" {{ filters.stock == level.value ? 'selected' }}>{{ level.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <select name="tri" onchange="this.form.requestSubmit()" class="form-select" aria-label="Tri">
+                    {% for id, label in sorts %}
+                        <option value="{{ id }}" {{ filters.tri == id ? 'selected' }}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if filters.q or filters.categorie or filters.stock %}
+                <div class="col-lg-2">
+                    <a href="{{ path('app_catalogue', {tri: filters.tri}) }}" class="btn-canva btn-canva-ghost w-100">Réinitialiser</a>
+                </div>
+            {% endif %}
+        </form>
+
+        <div class="row g-3">
+            {% for article in articles %}
+                <div class="col-md-6 col-xl-4">
+                    <div class="card-canva article-card h-100">
+                        <div class="card-canva-body d-flex flex-column h-100">
+                            <div class="d-flex justify-content-between gap-2 mb-2">
+                                <span class="badge text-bg-light border text-truncate">{{ article.categorie ?? 'Sans catégorie' }}</span>
+                                <span class="small font-monospace text-muted">{{ article.code }}</span>
+                            </div>
+                            <h3 class="h6 fw-bold">{{ article.libelle|striptags }}</h3>
+                            <p class="small text-muted">{{ article.description ? article.description|striptags : 'Aucune description disponible.' }}</p>
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="price">{{ ui.euro(article.prix_ht) }} <span class="fs-6 fw-normal text-muted">HT</span></div>
+                                    <div class="mt-2">{{ ui.stock_badge(article) }}</div>
+                                </div>
+                                <a href="{{ path('app_article_edit', {id: article.id}) }}" class="small fw-semibold text-decoration-none" style="color: var(--ml2c-primary);">
+                                    <i class="bi bi-gear me-1"></i>Modifier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="card-canva">
+                        <div class="card-canva-body text-center text-muted py-5">
+                            <i class="bi bi-folder2-open fs-1 d-block mb-2"></i>
+                            Aucun article ne correspond à votre recherche.
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
