@@ -163,8 +163,6 @@ final class ArticleRepository
     }
 
     /**
-     * Le stock actuel n'est pas modifiable ici : Datensis le recalcule à partir des mouvements de stock.
-     *
      * @param array<string, mixed> $data
      *
      * @throws \DomainException si le code ou le libellé existe déjà pour la société
@@ -261,6 +259,7 @@ final class ArticleRepository
             'type_article' => $data['type_article'] ?? 'vente',
             'prix_achat' => $decimal($data['prix_achat'] ?? null, 2),
             'suivi_stock' => (bool) ($data['suivi_stock'] ?? false),
+            'stock_actuel' => $decimal($data['stock_actuel'] ?? 0, 3) ?? '0.000',
             'stock_minimum' => $decimal($data['stock_minimum'] ?? null, 3),
             'stock_critique' => $decimal($data['stock_critique'] ?? null, 3),
         ];

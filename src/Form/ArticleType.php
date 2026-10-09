@@ -82,6 +82,14 @@ final class ArticleType extends AbstractType
                 'label' => 'Activer le suivi de stock',
                 'required' => false,
             ])
+            ->add('stock_actuel', NumberType::class, [
+                'label' => 'Stock actuel',
+                'input' => 'string',
+                'scale' => 3,
+                'html5' => true,
+                'attr' => ['step' => '0.001'],
+                'constraints' => [new Assert\NotBlank()],
+            ])
             ->add('stock_minimum', NumberType::class, [
                 'label' => 'Stock minimum (alerte)',
                 'required' => false,

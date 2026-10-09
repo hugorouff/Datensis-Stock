@@ -40,7 +40,7 @@ final class ArticleController extends AbstractController
     #[Route('/nouveau', name: 'app_article_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
-        return $this->handleForm($request, null, ['type_article' => 'vente', 'taux_tva' => '20.00', 'suivi_stock' => false]);
+        return $this->handleForm($request, null, ['type_article' => 'vente', 'taux_tva' => '20.00', 'suivi_stock' => false, 'stock_actuel' => '0.000']);
     }
 
     #[Route('/{id}/modifier', name: 'app_article_edit', requirements: ['id' => Requirement::DIGITS], methods: ['GET', 'POST'])]
@@ -59,6 +59,7 @@ final class ArticleController extends AbstractController
             'prix_achat' => null !== $article['prix_achat'] ? number_format($article['prix_achat'], 2, '.', '') : null,
             'taux_tva' => null !== $article['taux_tva'] ? number_format($article['taux_tva'], 2, '.', '') : null,
             'suivi_stock' => $article['suivi_stock'],
+            'stock_actuel' => number_format($article['stock_actuel'], 3, '.', ''),
             'stock_minimum' => null !== $article['stock_minimum'] ? (string) $article['stock_minimum'] : null,
             'stock_critique' => null !== $article['stock_critique'] ? (string) $article['stock_critique'] : null,
         ]);

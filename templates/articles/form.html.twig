@@ -30,9 +30,8 @@
                     {{ form_row(form.suivi_stock) }}
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <span class="form-label fw-semibold small">Stock actuel</span>
-                            <p class="form-control bg-white mb-1">{{ article ? article.stock_actuel|number_format(3, ',', ' ') : '0' }}</p>
-                            <div class="form-text">Calculé par Datensis à partir des mouvements de stock.</div>
+                            {{ form_row(form.stock_actuel) }}
+                            <div class="form-text">Quantité disponible enregistrée dans Datensis.</div>
                         </div>
                         <div class="col-md-4">{{ form_row(form.stock_minimum) }}</div>
                         <div class="col-md-4">{{ form_row(form.stock_critique) }}</div>
