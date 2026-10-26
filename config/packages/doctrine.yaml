@@ -14,7 +14,7 @@ doctrine:
 
             # Base de l'application Datensis (tables Django), interrogée en SQL via DBAL
             datensis:
-                url: '%env(resolve:SCALINGO_POSTGRESQL_URL)%'
+                url: '%env(resolve:DATENSIS_DATABASE_URL)%'
                 profiling_collect_backtrace: '%kernel.debug%'
     orm:
         auto_generate_proxy_classes: true
