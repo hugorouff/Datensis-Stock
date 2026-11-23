@@ -18,12 +18,12 @@
                     {% if branding.logoUrl %}
                         <img class="w-full h-full object-contain" src="{{ branding.logoUrl }}" alt="Logo {{ current_client_name() }}">
                     {% else %}
-                        <i class="fas fa-cube text-custom-primary text-xl"></i>
+                        <span class="datensis-mark" aria-hidden="true"></span>
                     {% endif %}
                 </div>
                 <div class="min-w-0">
                     <span class="font-bold text-lg tracking-tight block leading-none truncate">{{ current_client_name() }}</span>
-                    <span class="text-[11px] opacity-75 tracking-wider uppercase font-semibold">E-Client · Datensis</span>
+                    <span class="text-[11px] opacity-75 tracking-wider uppercase font-semibold">Datensis Stock</span>
                 </div>
             </a>
 

@@ -2,12 +2,12 @@
 
 /* Charte « Innovation & Confiance » de l'interface DATENSIS (base_modern.html). */
 :root {
-    --ml2c-primary: #005f73;
-    --ml2c-secondary: #94d2bd;
+    --ml2c-primary: #00778B;
+    --ml2c-secondary: #82C4A8;
     --ml2c-accent: #e9ecef;
-    --ml2c-tertiary: #ee6c4d;
-    --ml2c-pink: #c1007a;
-    --ml2c-teal: #4fa695;
+    --ml2c-tertiary: #E96148;
+    --ml2c-pink: #B44430;
+    --ml2c-teal: #00778B;
     --ml2c-teal-dark: #368072;
 
     --ml2c-gray-50: #f9fafb;
@@ -23,9 +23,9 @@
 
     --ml2c-on-primary: #ffffff;
     --ml2c-on-secondary: #0f3d36;
-    --ml2c-gradient-primary: linear-gradient(135deg, #005f73 0%, #0a7b8a 50%, #003a47 100%);
-    --ml2c-gradient-secondary: linear-gradient(135deg, #94d2bd 0%, #a8d8c4 50%, #7bc4a8 100%);
-    --ml2c-gradient-warm: linear-gradient(135deg, #ee6c4d 0%, #ff7a5c 50%, #e55a3a 100%);
+    --ml2c-gradient-primary: linear-gradient(135deg, #00778B 0%, #0a7b8a 50%, #003a47 100%);
+    --ml2c-gradient-secondary: linear-gradient(135deg, #82C4A8 0%, #a8d8c4 50%, #7bc4a8 100%);
+    --ml2c-gradient-warm: linear-gradient(135deg, #E96148 0%, #ff7a5c 50%, #e55a3a 100%);
     --ml2c-background: #f3f4f6;
     --ml2c-navbar: #ffffff;
     --ml2c-on-navbar: #1f2937;
@@ -747,3 +747,22 @@ html.theme-original .navbar-ml2c .form-select option {
     background: #374151;
     color: #fff;
 }
+
+.datensis-mark {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 2.65rem;
+    height: 2.65rem;
+    vertical-align: middle;
+    background: #FFFFFF url("../images/datensis-light.png") center / contain no-repeat;
+    border-radius: .55rem;
+}
+@media (prefers-color-scheme: dark) {
+    .datensis-mark { background-color: #172C41; background-image: url("../images/datensis-dark.png"); }
+}
+
+:root:not(.theme-dark) .datensis-mark { background-color:#FFFFFF; background-image:url("../images/datensis-light.png"); }
+:root.theme-dark .datensis-mark { background-color:#172C41; background-image:url("../images/datensis-dark.png"); }
+
+.navbar-ml2c .stock-brand { color: var(--ml2c-on-navbar, #1f2937); }
+.theme-dark .navbar-ml2c .stock-brand { color: #ffffff; }

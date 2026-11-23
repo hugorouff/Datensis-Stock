@@ -7,10 +7,10 @@ namespace App\Datensis;
  */
 final class Branding
 {
-    public const DEFAULT_PRIMARY = '#667eea';
-    public const DEFAULT_SECONDARY = '#764ba2';
-    public const DEFAULT_ACCENT = '#ee6c4d';
-    public const DEFAULT_BACKGROUND = '#f3f4f6';
+    public const DEFAULT_PRIMARY = '#00778B';
+    public const DEFAULT_SECONDARY = '#82C4A8';
+    public const DEFAULT_ACCENT = '#E96148';
+    public const DEFAULT_BACKGROUND = '#FFFFFF';
     public const DEFAULT_NAVBAR = '#ffffff';
     public const DEFAULT_CARD = '#ffffff';
 
@@ -20,7 +20,7 @@ final class Branding
      * @var list<array{name: string, primary: string, secondary: string, accent: string, background: string, navbar: string, card: string}>
      */
     public const PALETTES = [
-        ['name' => 'Violet Datensis', 'primary' => '#667eea', 'secondary' => '#764ba2', 'accent' => '#ee6c4d', 'background' => '#eef2ff', 'navbar' => '#4338ca', 'card' => '#ffffff'],
+        ['name' => 'Datensis', 'primary' => '#00778B', 'secondary' => '#82C4A8', 'accent' => '#E96148', 'background' => '#FFFFFF', 'navbar' => '#FFFFFF', 'card' => '#FFFFFF'],
         ['name' => 'Pétrole', 'primary' => '#005f73', 'secondary' => '#94d2bd', 'accent' => '#ee6c4d', 'background' => '#f0fdfa', 'navbar' => '#005f73', 'card' => '#ffffff'],
         ['name' => 'Bleu et or', 'primary' => '#1e3a8a', 'secondary' => '#f59e0b', 'accent' => '#38bdf8', 'background' => '#f8fafc', 'navbar' => '#1e3a8a', 'card' => '#ffffff'],
         ['name' => 'Émeraude', 'primary' => '#047857', 'secondary' => '#6ee7b7', 'accent' => '#f59e0b', 'background' => '#ecfdf5', 'navbar' => '#047857', 'card' => '#ffffff'],
